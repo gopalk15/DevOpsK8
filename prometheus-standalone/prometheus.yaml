@@ -6,7 +6,7 @@ metadata:
     prometheus: k8s
 spec:
   externalLabels:
-    cluster: minikube
+    cluster: kind-rabbit
   replicas: 1
   version: v2.13.1
   serviceAccountName: prometheus-standalone
@@ -15,7 +15,7 @@ spec:
     - key: k8s-app
       operator: In
       values:
-      - apps
+      - rabbitmq
 ---
 apiVersion: v1
 kind: ServiceAccount
