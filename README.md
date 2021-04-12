@@ -1,10 +1,6 @@
 # DevOpsK8
 Practice with k8, prometues, and RabbitMQ
 
-## Setting up Postgresql Pod
-
-### Create Postgres config maps resource 
-`kubectl create -f configmap\\postgres-configmap.yaml`
 
 ### Persistent Storage Volume
 
@@ -16,7 +12,7 @@ To save the data, we will be using Persistent volumes and persistent volume clai
 
 ### Deploy Postgresql
 
-- the deployment yaml file found in `/deployment` creates a postgres pod and service 
+- the deployment yaml file found in `/deployment` creates a postgres pod and service and creates a config map for postgres db 
 
     `kubectl create -f .\\deployment\\postgres-deployment.yaml`
 

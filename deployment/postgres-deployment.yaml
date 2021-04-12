@@ -13,9 +13,9 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-pod
+  name: postgres-deploy
 spec:
-  serviceName: postgres
+  serviceName: postgres-svc
   selector:
     matchLabels:
       app: postgres
@@ -49,10 +49,10 @@ metadata:
   labels:
     app: postgres
 spec:
+  type: NodePort
   selector:
     app: postgres
   ports:
     - protocol: TCP
-      name: http
       port: 5432
       targetPort: 5432
