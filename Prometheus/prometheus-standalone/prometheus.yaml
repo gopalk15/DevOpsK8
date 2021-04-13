@@ -6,16 +6,13 @@ metadata:
     prometheus: k8s
 spec:
   externalLabels:
-    cluster: kind-rabbit
+    cluster: rab-prom-cluster
   replicas: 1
   version: v2.13.1
   serviceAccountName: prometheus-standalone
-  serviceMonitorSelector:
-    matchExpressions:
-    - key: k8s-app
-      operator: In
-      values:
-      - rabbitmq
+  podMonitorSelector:
+    matchLabels:
+      team: RAP
 ---
 apiVersion: v1
 kind: ServiceAccount
