@@ -34,3 +34,19 @@ Running a standalone instance of rabbitMQ
     ```
     docker run --rm --net rabbits -e RABBIT_HOST=rabbit-1 -e RABBIT_PORT=5672 -e RABBIT_USERNAME=guest -e RABBIT_PASSWORD=guest -p 80:80 aimvector/rabbitmq-consumer:v1.0.0 
     ```
+## Forming a Manual RabbitMQ cluster
+
+Use the rabbits docker network created with the following command
+    ` docker network create rabbits `
+
+1. Spin up three rabbitmq nodes manually using the following commands
+    ```
+        docker run -d --rm --net rabbits --hostname rabbit-1 --name rabbit-1 -p 8081:15672 rabbitmq:3.8-management
+        docker run -d --rm --net rabbits --hostname rabbit-2 --name rabbit-2 -p 8082:15672 rabbitmq:3.8-management
+        docker run -d --rm --net rabbits --hostname rabbit-3 --name rabbit-3 -p 8083:15672 rabbitmq:3.8-management
+    ```
+
+2. Check clustering status of one of the nodes with the following command
+    ` docker exec -t rabbit-1 rabbitmqctl cluster_status `
+
+If any existing node need to join a cluster they will lose all the data they have stored already. Therefore, you will have to join the reset command on every node that will like to join the cluster.
