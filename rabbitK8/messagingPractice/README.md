@@ -4,21 +4,23 @@
 
 Running a standalone instance of rabbitMQ
     ```
-        #Run stand alone instance 
-        docker network create rabbits
-        docker run -d --rm --net rabbits --hostname rabbit-1 --name rabbit-1 rabbitmq:3.8
+    #Run stand alone instance 
+    docker network create rabbits
+    docker run -d --rm --net rabbits --hostname rabbit-1 --name rabbit-1 rabbitmq:3.8
 
-        #Grabbing existing erlang cookie 
-        docker exec -it rabbit-1 cat /var/lib/rabbitmq/.erlang.cookie
+    #Grabbing existing erlang cookie 
+    docker exec -it rabbit-1 cat /var/lib/rabbitmq/.erlang.cookie
 
-        # clean up
-        docker rm -f rabbit-1
+    # clean up
+    docker rm -f rabbit-1
     ```
 
 ## Launch Publisher Application
 
 1. Navigate to publisher directory 
-    ` cd ~/publisher/ `
+    ```
+    cd ~/publisher/ 
+    ```
 2. Build docker image 
     ` docker build . -t aimvector/rabbitmq-publisher:v1.0.0`
 3. Spin up publisher container 
@@ -41,12 +43,32 @@ Use the rabbits docker network created with the following command
 
 1. Spin up three rabbitmq nodes manually using the following commands
     ```
-        docker run -d --rm --net rabbits --hostname rabbit-1 --name rabbit-1 -p 8081:15672 rabbitmq:3.8-management
-        docker run -d --rm --net rabbits --hostname rabbit-2 --name rabbit-2 -p 8082:15672 rabbitmq:3.8-management
-        docker run -d --rm --net rabbits --hostname rabbit-3 --name rabbit-3 -p 8083:15672 rabbitmq:3.8-management
+        docker run -d --rm --net rabbits --hostname rabbit-1 --name rabbit-1 -p 8081:15672 -e RABBITMQ_ERLANG_COOKIE=JKJPRRZCSBOUMHFPDZSK rabbitmq:3.8-management
+        docker run -d --rm --net rabbits --hostname rabbit-2 --name rabbit-2 -p 8082:15672 -e RABBITMQ_ERLANG_COOKIE=JKJPRRZCSBOUMHFPDZSK rabbitmq:3.8-management
+        docker run -d --rm --net rabbits --hostname rabbit-3 --name rabbit-3 -p 8083:15672 -e RABBITMQ_ERLANG_COOKIE=JKJPRRZCSBOUMHFPDZSK rabbitmq:3.8-management
     ```
 
 2. Check clustering status of one of the nodes with the following command
     ` docker exec -t rabbit-1 rabbitmqctl cluster_status `
 
 If any existing node need to join a cluster they will lose all the data they have stored already. Therefore, you will have to join the reset command on every node that will like to join the cluster.
+*NOTE: All instances of rabbitmq that are clustered togeter must be spun up with the same erlang cookie*
+
+3. Configure nodes rabbit@rabbit-2 and rabbit@rabbit-3 to cluster with rabbit@rabbit-1
+    ```
+    #join node 2 to cluster
+
+    docker exec -it rabbit-2 rabbitmqctl stop_app
+    docker exec -it rabbit-2 rabbitmqctl reset
+    docker exec -it rabbit-2 rabbitmqctl join_cluster rabbit@rabbit-1
+    docker exec -it rabbit-2 rabbitmqctl start_app
+    docker exec -it rabbit-2 rabbitmqctl cluster_status
+
+    #join node 3 to cluster
+
+    docker exec -it rabbit-3 rabbitmqctl stop_app
+    docker exec -it rabbit-3 rabbitmqctl reset
+    docker exec -it rabbit-3 rabbitmqctl join_cluster rabbit@rabbit-1
+    docker exec -it rabbit-3 rabbitmqctl start_app
+    docker exec -it rabbit-3 rabbitmqctl cluster_status
+    ```
