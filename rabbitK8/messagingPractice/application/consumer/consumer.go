@@ -1,6 +1,7 @@
 package main
 
-import(
+
+import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
@@ -8,39 +9,35 @@ import(
 )
 
 var rabbit_host = os.Getenv("RABBIT_HOST")
-var rabbit_port = os.Getenv("RABBIT_PORT")
+var rabbit_port = os.Getenv("RABBIT_PORT") 
 var rabbit_user = os.Getenv("RABBIT_USERNAME")
 var rabbit_password = os.Getenv("RABBIT_PASSWORD")
 
-
-func main(){
+func main() {
 	consume()
 }
 
-func consume(){
+func consume() {
 
-	conn, err := amqp.Dial("amqp://" + rabbit_user + "@" + rabbit_host + ":" + rabbit_port + "/")
+	conn, err := amqp.Dial("amqp://" + rabbit_user + ":" +rabbit_password + "@" + rabbit_host + ":" + rabbit_port +"/")
+
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to connect to RabbitMQ", err)
 	}
 
-	//Create a virtual connection to a queue
 	ch, err := conn.Channel()
 
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to open a channel", err)
 	}
 
-	defer ch.Close()
-
-	//Declare a queue
 	q, err := ch.QueueDeclare(
-		"publisher", //name
-		false, //durable
-		false, //delete when unused
-		false, //exclusive
-		false, //no-wait
-		nil, //arguments
+		"publisher", // name
+		true,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
 	)
 
 	if err != nil {
@@ -53,29 +50,29 @@ func consume(){
 	defer ch.Close()
 
 	msgs, err := ch.Consume(
-		q.Name, //queue
-		"", //consumer
-		false, //auto-ack
-		false, //exclusive
-		false, //no-local
-		false, //no-wait
-		nil, //args
-	)
+		q.Name, // queue
+		"",     // consumer
+		false,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	  )
 
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to register consumer". err)
+		log.Fatalf("%s: %s", "Failed to register consumer", err)
 	}
-	
+
 	forever := make(chan bool)
 
-	go func(){
+	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
-
+			
 			d.Ack(false)
 		}
-	}()
-
-	fmt.Println("Running...")
-	<-forever
+	  }()
+	  
+	  fmt.Println("Running...")
+	  <-forever
 }

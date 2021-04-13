@@ -9,7 +9,7 @@ WORKDIR /src
 RUN go get github.com/sirupsen/logrus
 RUN go get github.com/streadway/amqp
 
-COPY consumer.go /src.
+COPY consumer.go /src
 
 RUN go build consumer.go
 
