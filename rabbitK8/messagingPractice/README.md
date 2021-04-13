@@ -23,7 +23,7 @@ Running a standalone instance of rabbitMQ
     ` docker build . -t aimvector/rabbitmq-publisher:v1.0.0`
 3. Spin up publisher container 
     ```
-    docker run --rm --net rabbits -e RABBIT_HOST=rabbit-1 -e RABBIT_PORT=5672 -e RABBIT_USERNAME=guest -e RABBIT_PASSWORD=guest -p 80:80 aimvector/rabbitmq-publisher:v1.0.0 
+    docker run --rm --net rabbits -e RABBIT_HOST=rabbit-1 -e RABBIT_PORT=5672 -e RABBIT_USERNAME=guest -e RABBIT_PASSWORD=guest aimvector/rabbitmq-publisher:v1.0.0 
     ```
 ## Launch Consumer Application
 1. Navigate to publisher directory 

@@ -48,7 +48,34 @@ func consume(){
 	}
 
 	fmt.Println("Channel and Queue established")
+
 	defer conn.Close()
 	defer ch.Close()
+
+	msgs, err := ch.Consume(
+		q.Name, //queue
+		"", //consumer
+		false, //auto-ack
+		false, //exclusive
+		false, //no-local
+		false, //no-wait
+		nil, //args
+	)
+
+	if err != nil {
+		log.Fatalf("%s: %s", "Failed to register consumer". err)
+	}
 	
+	forever := make(chan bool)
+
+	go func(){
+		for d := range msgs {
+			log.Printf("Received a message: %s", d.Body)
+
+			d.Ack(false)
+		}
+	}()
+
+	fmt.Println("Running...")
+	<-forever
 }
