@@ -1,5 +1,12 @@
 # Messaging Practice - RabbitMQ 
 
+## Deploying Minikube Cluser - Windows 10 Machine
+
+1. Install Minikube 
+    ` choco install minikube -y`
+2. Launch cluster with 2 nodes 
+    ` minikube start --kubernetes-version=v1.14.8 --extra-config=apiserver.authorization-mode=RBAC --nodes 2 `
+
 ## RabbitMQ
 
 Running a standalone instance of rabbitMQ
@@ -72,3 +79,11 @@ If any existing node need to join a cluster they will lose all the data they hav
     docker exec -it rabbit-3 rabbitmqctl start_app
     docker exec -it rabbit-3 rabbitmqctl cluster_status
     ```
+
+## Connecting RabbitMQ instance to Prometheus and Grafana
+
+1. Spin up an instance of prometheus and mount a config file 
+ `docker run -d --rm --net rabbits --hostname prometheus --name prometheus -p 9090:9090 -v C:/Users/kaylin/git/DevOpsK8/Prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml prom/prometheus --config.file=/etc/prometheus/prometheus.yml`
+
+2. Run Grafana
+    `docker run -d --rm --net rabbits --hostname grafana --name grafana -p 3000:3000 grafana/grafana`

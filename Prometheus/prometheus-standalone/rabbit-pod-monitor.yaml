@@ -1,4 +1,3 @@
-  
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
@@ -6,12 +5,11 @@ metadata:
   labels:
     team: RAP
 spec:
-  jobLabel: MicroService
+  podMetricsEndpoints:
+  - interval: 15s
+    port: prometheus
   selector:
     matchLabels:
-      app: rabbitmq
+      app.kubernetes.io/component: rabbitmq
   namespaceSelector:
-    matchNames:
-    - rabbits
-  podMetricsEndpoints:
-  - port: prometheus
+    any: true
