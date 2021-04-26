@@ -2,9 +2,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: rabbitmq
+  labels:
+    app: rabbitmq
 spec:
   serviceName: rabbitmq
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: rabbitmq
@@ -12,6 +14,9 @@ spec:
     metadata:
       labels:
         app: rabbitmq
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '15692'
     spec:
       serviceAccountName: rabbitmq
       initContainers:
@@ -36,6 +41,8 @@ spec:
           name: amqp
         - containerPort: 15692
           name: prometheus
+        - containerPort: 15672
+          name: management
         env:
         - name: RABBIT_POD_NAME
           valueFrom:
@@ -106,8 +113,10 @@ spec:
   - port: 15692
     targetPort: 15692
     name: prometheus
-  selector:
-    app: rabbitmq
+  - port: 15672
+    targetPort: 15672
+    name: management
+ 
 
     
 

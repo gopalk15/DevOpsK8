@@ -10,9 +10,12 @@ spec:
   replicas: 1
   version: v2.13.1
   serviceAccountName: prometheus-standalone
-  podMonitorSelector:
-    matchLabels:
-      team: RAP
+  serviceMonitorSelector:
+    matchExpressions:
+    - key: k8s-app
+      operator: In
+      values:
+      - default
 ---
 apiVersion: v1
 kind: ServiceAccount

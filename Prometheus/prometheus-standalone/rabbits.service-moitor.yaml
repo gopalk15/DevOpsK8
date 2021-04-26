@@ -1,10 +1,10 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: rabbitmq
+  name: apps
   labels:
     prometheus: prometheus-standalone
-    team: RAP
+    k8s-app: apps
 spec:
   jobLabel: rabbitmq
   selector:
@@ -12,7 +12,7 @@ spec:
       app: rabbitmq
   namespaceSelector:
     matchNames:
-    - rabbits
+    - default
   endpoints:
-  - targetPort: 15692
-    interval: 15s
+  - port: prometheus
+    interval: 5s
